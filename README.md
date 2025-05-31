@@ -1,3 +1,122 @@
+
+## Instrukcja instalacji i uruchomienia aplikacji
+
+1.  **Pobierz paczkę z GitHuba:**
+    [https://github.com/Jardee/czaspracy/archive/refs/heads/main.zip](https://github.com/Jardee/czaspracy/archive/refs/heads/main.zip)
+
+2.  **Wejdź do folderu z aplikacją:**
+
+    ```bash
+    cd "ścieżka do folderu"
+    ```
+    (Zamiast `"ścieżka do folderu"` wstaw swoją ścieżkę do folderu).
+
+3.  **Zainstaluj zależności Composera:**
+    ```bash
+    composer install
+    ```
+
+4.  **Skonfiguruj plik .env:**
+    ```bash
+    cp .env.example .env
+    ```
+    Edytuj plik `.env` i wprowadź odpowiednie ustawienia (nazwa aplikacji, baza danych, mail itp.).
+
+    zawartość pliku `.env`:
+    ```
+    APP_NAME=czaspracy
+    APP_ENV=local
+    APP_KEY=
+    APP_DEBUG=true
+    APP_URL=http://localhost
+
+    LOG_CHANNEL=stack
+    LOG_DEPRECATIONS_CHANNEL=null
+    LOG_LEVEL=debug
+
+    DB_CONNECTION=sqlite
+
+    BROADCAST_DRIVER=log
+    CACHE_DRIVER=file
+    FILESYSTEM_DISK=local
+    QUEUE_CONNECTION=sync
+    SESSION_DRIVER=file
+    SESSION_LIFETIME=120
+
+    MEMCACHED_HOST=127.0.0.1
+    REDIS_HOST=127.0.0.1
+    REDIS_PASSWORD=null
+    REDIS_PORT=6379
+
+    MAIL_MAILER=smtp
+    MAIL_HOST=mailpit
+    MAIL_PORT=1025
+    MAIL_USERNAME=null
+    MAIL_PASSWORD=null
+    MAIL_ENCRYPTION=null
+    MAIL_FROM_ADDRESS="hello@example.com"
+    MAIL_FROM_NAME="${APP_NAME}"
+
+    AWS_ACCESS_KEY_ID=
+    AWS_SECRET_ACCESS_KEY=
+    AWS_DEFAULT_REGION=us-east-1
+    AWS_BUCKET=
+    AWS_USE_PATH_STYLE_ENDPOINT=false
+
+    PUSHER_APP_ID=
+    PUSHER_APP_KEY=
+    PUSHER_APP_SECRET=
+    PUSHER_HOST=
+    PUSHER_PORT=443
+    PUSHER_SCHEME=https
+    PUSHER_APP_CLUSTER=mt1
+
+    VITE_APP_NAME="${APP_NAME}"
+    VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+    VITE_PUSHER_HOST="${PUSHER_HOST}"
+    VITE_PUSHER_PORT="${PUSHER_PORT}"
+    VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+    VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+    ```
+
+5.  **Wygeneruj klucz aplikacji:**
+    ```bash
+    php artisan key:generate
+    ```
+
+6.  **Uruchom migracje bazy danych:**
+    ```bash
+    php artisan migrate
+    ```
+
+7.  **Uruchom seedera bazy danych:**
+    ```bash
+    php artisan db:seed
+    ```
+
+8.  **Zainstaluj zależności Vite:**
+    ```bash
+    npm install
+    ```
+
+9.  **Zbuduj aplikację:**
+    ```bash
+    npm run build
+    ```
+
+10. **Umieść aplikację w XAMPP (opcjonalnie):**
+    Możesz umieścić aplikację w folderze `xampp/htdocs`. Aplikacja będzie dostępna w katalogu `/public`.
+
+
+## Konta do testowania
+
+* Admin User admin@example.com
+* Supervisor User supervisor@example.com
+* Employee One employee1@example.com
+* Employee Two employee2@example.com
+
+* Do Każdego hasło to `password`
+
 # Czas Pracy - Aplikacja Laravel
 
 Aplikacja "Czas Pracy" jest systemem internetowym napisanym w frameworku Laravel, służącym do zarządzania czasem pracy pracowników. Umożliwia ona rejestrowanie wpisów czasu pracy, dodawanie do nich komentarzy oraz zarządzanie użytkownikami i ich rolami.
