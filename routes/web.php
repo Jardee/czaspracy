@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('work-entries', WorkEntryController::class);
 
     Route::post('work-entries/{work_entry}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::get('comments/{comment}/edit', [CommentController::class, 'edit'])->name('comments.edit');
     Route::patch('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 

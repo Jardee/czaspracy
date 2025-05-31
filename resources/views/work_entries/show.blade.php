@@ -66,34 +66,80 @@
                         </form>
                     @endcan
 
-                    <div class="space-y-4">
-                        @forelse ($workEntry->comments->sortByDesc('created_at') as $comment)
-                            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-md">
-                                <div class="flex justify-between items-center mb-1">
-                                    <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $comment->user->name }}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
-                                </div>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{{ $comment->comment_text }}</p>
-                                @if(Gate::allows('update-comment', $comment) || Gate::allows('delete-comment', $comment))
-                                <div class="mt-2 text-xs">
-                                    @can('update-comment', $comment)
-                                    @endcan
-                                    @can('delete-comment', $comment)
-                                        <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="inline ml-2">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Czy na pewno chcesz usunąć ten komentarz?')">
-                                                {{ __('Usuń') }}
-                                            </button>
-                                        </form>
-                                    @endcan
-                                </div>
-                                @endif
-                            </div>
-                        @empty
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Brak komentarzy.') }}</p>
-                        @endforelse
+<div class="space-y-4" x-data="{ editingCommentId: null, editCommentText: '', originalCommentText: '' }">
+    @forelse ($workEntry->comments->sortByDesc('created_at') as $comment)
+        <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-md" id="comment-{{ $comment->id }}">
+            <div class="flex justify-between items-center mb-1">
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ $comment->user->name }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
+            </div>
+
+            {{-- Tryb wyświetlania komentarza --}}
+            <div x-show="editingCommentId !== {{ $comment->id }}">
+                <p class="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{{ $comment->comment_text }}</p>
+                @if(Gate::allows('update-comment', $comment) || Gate::allows('delete-comment', $comment))
+                <div class="mt-2 text-xs flex items-center space-x-2">
+                    @can('update-comment', $comment)
+                        <button @click="editingCommentId = {{ $comment->id }}; editCommentText = `{{ htmlspecialchars($comment->comment_text, ENT_QUOTES) }}`; originalCommentText = `{{ htmlspecialchars($comment->comment_text, ENT_QUOTES) }}`" class="text-yellow-500 hover:text-yellow-700">
+                            {{ __('Edytuj') }}
+                        </button>
+                    @endcan
+                    @can('delete-comment', $comment)
+                        <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="inline" onsubmit="return confirm('Czy na pewno chcesz usunąć ten komentarz?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="ml-3 text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-200">
+                                {{ __('Usuń') }}
+                            </button>
+                        </form>
+                    @endcan
+                </div>
+                @endif
+            </div>
+
+            {{-- Tryb edycji komentarza --}}
+            <div x-show="editingCommentId === {{ $comment->id }}" x-cloak>
+                <form @submit.prevent="
+                    axios.patch('{{ route('comments.update', $comment) }}', { comment_text: editCommentText })
+                        .then(response => {
+                            if(response.data.success) {
+                                document.querySelector('#comment-{{ $comment->id }} > div[x-show=\'editingCommentId !== {{ $comment->id }}\'] > p').textContent = response.data.comment.comment_text;
+                                // Prosty alert, można zastąpić ładniejszym powiadomieniem
+                                alert(response.data.message);
+                                editingCommentId = null;
+                            } else {
+                                alert(response.data.message || 'Wystąpił błąd podczas aktualizacji.');
+                            }
+                        })
+                        .catch(error => {
+                            let errorMessage = 'Wystąpił błąd.';
+                            if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.comment_text) {
+                                errorMessage = error.response.data.errors.comment_text[0];
+                            } else if (error.response && error.response.data && error.response.data.message) {
+                                errorMessage = error.response.data.message;
+                            }
+                            alert(errorMessage);
+                            console.error('Error updating comment:', error);
+                        })
+                ">
+                    @csrf 
+                    @method('PATCH')
+                    <textarea x-model="editCommentText" name="comment_text" rows="3" class="block mt-1 mb-2 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required></textarea>
+                    <div class="flex items-center justify-end space-x-2">
+                        <x-secondary-button type="button" @click="editingCommentId = null; editCommentText = originalCommentText">
+                            {{ __('Anuluj') }}
+                        </x-secondary-button>
+                        <x-primary-button type="submit">
+                            {{ __('Zapisz') }}
+                        </x-primary-button>
                     </div>
+                </form>
+            </div>
+        </div>
+    @empty
+        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Brak komentarzy.') }}</p>
+    @endforelse
+</div>
                 </div>
             </div>
 

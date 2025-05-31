@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 class CommentController extends Controller
 {
@@ -39,21 +40,32 @@ class CommentController extends Controller
         return redirect()->route('work-entries.show', $workEntry)->with('success_comment', 'Komentarz został dodany.');
     }
 
-    public function update(Request $request, Comment $comment): RedirectResponse
-    {
-        if (!Gate::allows('update-comment', $comment)) {
-            return redirect()->back()->with('error', 'Nie masz uprawnień do edycji tego komentarza.');
+public function update(Request $request, Comment $comment): RedirectResponse|JsonResponse
+{
+    if (!Gate::allows('update-comment', $comment)) {
+        if ($request->expectsJson()) {
+            return response()->json(['success' => false, 'message' => 'Nie masz uprawnień do edycji tego komentarza.'], 403);
         }
-
-        $validatedData = $request->validate([
-            'comment_text' => 'required|string|min:1',
-        ]);
-
-        $comment->comment_text = $validatedData['comment_text'];
-        $comment->save();
-
-        return redirect()->route('work-entries.show', $comment->work_entry_id)->with('success_comment', 'Komentarz został zaktualizowany.');
+        return redirect()->back()->with('error_comment', 'Nie masz uprawnień do edycji tego komentarza.');
     }
+
+    $validatedData = $request->validate([
+        'comment_text' => 'required|string|min:1',
+    ]);
+
+    $comment->comment_text = $validatedData['comment_text'];
+    $comment->save();
+
+    if ($request->expectsJson()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Komentarz został zaktualizowany.',
+            'comment' => $comment 
+        ]);
+    }
+
+    return redirect()->route('work-entries.show', $comment->work_entry_id)->with('success_comment', 'Komentarz został zaktualizowany.');
+}
 
     public function destroy(Comment $comment): RedirectResponse
     {
