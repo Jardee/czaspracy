@@ -1,3 +1,17 @@
+## Aplikacja uruchomiona jest na zewnętrznym serwerze
+
+[http://37.233.98.57:8082/login](http://37.233.98.57:8082/login)
+
+
+## Konta do testowania
+
+* Admin User admin@example.com
+* Supervisor User supervisor@example.com
+* Employee One employee1@example.com
+* Employee Two employee2@example.com
+
+* Do Każdego hasło to `password`
+
 
 ## Instrukcja instalacji i uruchomienia aplikacji
 
@@ -108,14 +122,6 @@
     Możesz umieścić aplikację w folderze `xampp/htdocs`. Aplikacja będzie dostępna w katalogu `/public`.
 
 
-## Konta do testowania
-
-* Admin User admin@example.com
-* Supervisor User supervisor@example.com
-* Employee One employee1@example.com
-* Employee Two employee2@example.com
-
-* Do Każdego hasło to `password`
 
 # Czas Pracy - Aplikacja Laravel
 
