@@ -12,10 +12,15 @@
                     <x-nav-link :href="route('work-entries.index')" :active="request()->routeIs('work-entries.index') || request()->routeIs('work-entries.show') || request()->routeIs('work-entries.create') || request()->routeIs('work-entries.edit')">
                         {{ __('Wpisy Czasu Pracy') }}
                     </x-nav-link>
+                    <!------------testy moje----------->
+                    
                     @can('manage-users')
                     <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.index')">
                         {{ __('Zarządzaj Użytkownikami') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.index')">
+                     {{ __('Raporty') }}
+                     </x-nav-link>
                     @endcan
                 </div>
             </div>
